@@ -1,0 +1,10 @@
+#!/usr/bin/bash
+# Author: zenobit
+# Description: Uses gum to provide a simple TUI
+# License MIT
+
+header() {
+    gum style --padding '0 1' --border rounded --border-foreground "#295340" "Gum Make Executable"
+}
+header
+chmod a+x $(gum file --cursor.foreground="#0BC51A" --permissions.foreground="3" --symlink.foreground="36" --selected.foreground="#295340" --file-size.foreground="8")
