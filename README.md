@@ -1,4 +1,5 @@
 # Collection of TUI utililities
+which use [gum](https://github.com/charmbracelet/gum)
 ### for various purposes
 # Not finished but usable
 Check code before using!
@@ -8,10 +9,10 @@ Used to create aliases for everything. But then forgot all commands. Get tired o
 ### gum
 #### And everything changed
 Maybe for you to...
+If you wanna learn terminal commands but still don't type to much.
 
-## Check what happend
-
-PS: Wait for more nice TUIs
-
+## Check it
 - gme - Gum Make Executable - Simple TUI for chmod a+-x
 - gumaker - Helps you create glamourous shell scripts.
+
+PS: Wait for more nice TUIs...
