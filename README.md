@@ -12,8 +12,8 @@ Maybe for you to...
 If you wanna learn terminal commands but still don't type to much.
 
 ## Check it
-- gumaker - Helps you create glamourous shell scripts.
-###
+- gumák - Helps you create glamourous shell scripts.
+![gumák](./DOCS/gumak.svg)
 - gme - Gum Make Executable - Simple TUI for chmod a+-x
 - gvpm - TUI for vpm aka void package manager (xbps)
 - gvpsm - TUI for vpsm aka void source package manager (xbps-src)
