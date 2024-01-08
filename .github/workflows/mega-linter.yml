@@ -31,6 +31,16 @@ env:
   # or posted in a PR (pull_request)
   APPLY_FIXES_MODE: commit
 
+  ENABLE_LINTERS: BASH_SHFMT
+                  BASH_EXEC
+                  BASH_SHELLCHECK
+                  ACTION_ACTIONLINT
+                  EDITORCONFIG_EDITORCONFIG_CHECKER
+                  MARKDOWN_MARKDOWNLINT
+                  MARKDOWN_MARKDOWN_LINK_CHECK
+                  MARKDOWN_MARKDOWN_TABLE_FORMATTER
+                  MARKDOWN_REMARK_
+
 concurrency:
   group: ${{ github.ref }}-${{ github.workflow }}
   cancel-in-progress: true
