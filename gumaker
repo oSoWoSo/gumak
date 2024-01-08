@@ -84,7 +84,7 @@ export GUM_STYLE_BORDER_FOREGROUND=${c}
 export GUM_STYLE_BORDER=rounded
 
 # create temp dir
-tmpdir="/TMP/gumaker"
+tmpdir="/tmp/gumaker"
 mkdir -p ${tmpdir}
 
 header() {
@@ -97,32 +97,6 @@ header() {
 }
 
 # options
-change_borders() {
-	headertext="Change borders style"
-	header
-	BORDER=$(echo "none
-hidden
-normal
-rounded
-thick
-double" | gum filter --height 6)
-	if [ ${ch} == '--border="none"' ]; then
-		if [ -n "${BORDER}" ]; then
-			echo -n "--border=\"$BORDER\" " >> ${tmp}
-			export GUM_STYLE_BORDER=${BORDER}
-			header
-			gum_style
-		fi
-	elif [ ${ch} == '-b' ]; then
-		if [ -n "${BORDER}" ]; then
-			echo -n "-b \"$BORDER\" " >> ${tmp}
-			export GUM_STYLE_BORDER=${BORDER}
-			header
-			gum_style
-		fi
-	fi
-}
-
 color_16() {
 	choice=$(echo "[38;5;1m1[0m
 [38;5;2m2[0m
@@ -414,13 +388,13 @@ color_picker() {
 }
 
 change_color() {
-		height=4
+		height=5
 		item_name=color
 		start=$(echo "random
 color picker
 write
 16 colors
-256 colors" | gum filter --height $height)
+256 colors" | gum filter --no-fuzzy --header "Change color..." --height $height)
 	# shellcheck disable=SC2016
 	case $start in
 		'random' ) new_value='$(( RANDOM % 255 + 1 ))';;
@@ -429,6 +403,32 @@ write
 		'16 colors' ) color_16;;
 		'256 colors' ) color_256;;
 	esac
+}
+
+change_borders() {
+	headertext="Change borders style"
+	header
+	BORDER=$(echo "none
+hidden
+normal
+rounded
+thick
+double" | gum filter --no-fuzzy --header "Change borders..."  --height 7)
+	if [ ${ch} == '--border="none"' ]; then
+		if [ -n "${BORDER}" ]; then
+			echo -n "--border=\"$BORDER\" " >> ${tmp}
+			export GUM_STYLE_BORDER=${BORDER}
+			header
+			gum_style
+		fi
+	elif [ ${ch} == '-b' ]; then
+		if [ -n "${BORDER}" ]; then
+			echo -n "-b $BORDER " >> ${tmp}
+			export GUM_STYLE_BORDER=${BORDER}
+			header
+			gum_style
+		fi
+	fi
 }
 
 change_spinner() {
@@ -442,12 +442,18 @@ globe
 moon
 monkey
 meter
-hamburger" | gum filter --height 11)
+hamburger" | gum filter --no-fuzzy --header "Change spinner..." --height 11)
 	if [ -n "${spinner}" ]; then
-		echo -n "--border=\"$spinner\" " >> ${tmp}
-		export GUM_SPIN_SPINNER=${spinner}
-		header
-		gum_style
+		gum spin -s ${spinner} sleep 3
+		gum confirm "Use this one?" && go="yes" || go=""
+		if [ -n "${go}" ]; then
+			echo -n "-s $spinner " >> ${tmp}
+			export GUM_SPIN_SPINNER=${spinner}
+			header
+			gum_spin
+		else
+			change_spinner
+		fi
 	fi
 }
 
@@ -467,7 +473,7 @@ gum_() {
 			cat "$temp" >> ${tmpdir}/tmp
 		fi
 	done
-	text1=$(gum style \
+	headertext=$(gum style \
 	--border rounded \
 	--align center "\
 TUI for $(gum -v)
@@ -478,12 +484,7 @@ NOT work without filling missing options.
 gum
 A tool for [38;5;212mglamorous[0m shell scripts.
 Usage: gum <command>")
-	text2=$(gum style \
-	--border rounded \
-	--align center "\
-Choosed: $(cat tmp)")
-	gum join --vertical --align center "$text1" "$text2"
-
+	header
 	h=16
 	choice=$(echo "\
 CLEAR    Previous tmp- files
@@ -500,7 +501,7 @@ style    Apply coloring, borders, spacing to text
 table    Render a table of data
 write    Prompt for long-form text
 log      Log messages to output
-EXIT     Quit gumaker" | gum filter --height ${h})
+EXIT     Quit gumaker" | gum filter --no-fuzzy --header "Choose..." --height ${h})
 	ch=$(echo ${choice} | cut -d' ' -f1)
 	if [ ${ch} == 'EXIT' ]; then
 		echo "Goodbye"
@@ -518,8 +519,7 @@ gum_choose() {
 Usage: gum choose [<options> ...]
 
 Arguments:
-  [<options> ...]    Options to choose from.
-	Choosed: $(cat ${tmp})"
+  [<options> ...]    Options to choose from."
 	header
 	h=18
 	choice=$(echo "\
@@ -539,7 +539,7 @@ ENOUGH back to main menu  Stop choosing choose
 --cursor.foreground=\"212\"    Foreground Color (\$GUM_CHOOSE_CURSOR_FOREGROUND)
 --header.foreground=\"240\"    Foreground Color (\$GUM_CHOOSE_HEADER_FOREGROUND)
 --item.foreground=\"\"         Foreground Color (\$GUM_CHOOSE_ITEM_FOREGROUND)
---selected.foreground=\"212\"  Foreground Color (\$GUM_CHOOSE_SELECTED_FOREGROUND)" | gum filter --header "Action..." --height ${h})
+--selected.foreground=\"212\"  Foreground Color (\$GUM_CHOOSE_SELECTED_FOREGROUND)" | gum filter --no-fuzzy --header "Choosed: $(cat ${tmp})" --height ${h})
 	ch=$(echo ${choice} | cut -d' ' -f1)
 		if [ ${ch} == 'ENOUGH' ]; then
 			echo -e "\n" >> ${tmp}
@@ -561,8 +561,7 @@ gum_confirm() {
 Usage: gum confirm [<prompt>]
 
 Arguments:
-  [<prompt>]    Prompt to display.
-	Choosed: $(cat ${tmp})"
+  [<prompt>]    Prompt to display."
 	header
 	h=9
 	choice=$(echo "\
@@ -573,7 +572,7 @@ ENOUGH back to main menu  Stop choosing confirm
 --timeout=0               Timeout until confirm returns selected value or default if provided (\$GUM_CONFIRM_TIMEOUT)
 --prompt.foreground=\"\"         Foreground Color (\$GUM_CONFIRM_PROMPT_FOREGROUND)
 --selected.foreground=\"230\"    Foreground Color (\$GUM_CONFIRM_SELECTED_FOREGROUND)
---unselected.foreground=\"254\"  Foreground Color (\$GUM_CONFIRM_UNSELECTED_FOREGROUND)" | gum filter --header "Action..." --height ${h})
+--unselected.foreground=\"254\"  Foreground Color (\$GUM_CONFIRM_UNSELECTED_FOREGROUND)" | gum filter --no-fuzzy --header "Choosed: $(cat ${tmp})" --height ${h})
 	ch=$(echo ${choice} | cut -d' ' -f1)
 		if [ ${ch} == 'ENOUGH' ]; then
 			echo -e "\n" >> ${tmp}
@@ -595,8 +594,7 @@ gum_file() {
 Usage: gum file [<path>]
 
 Arguments:
-  [<path>]    The path to the folder to begin traversing (\$GUM_FILE_PATH)
-	Choosed: $(cat ${tmp})"
+  [<path>]    The path to the folder to begin traversing (\$GUM_FILE_PATH)"
 	header
 	h=15
 	choice=$(echo "\
@@ -613,7 +611,7 @@ ENOUGH back to main menu  Stop choosing file
 --file.foreground=\"\"              Foreground Color (\$GUM_FILE_FILE_FOREGROUND)
 --permissions.foreground=\"244\"  Foreground Color (\$GUM_FILE_PERMISSIONS_FOREGROUND)
 --selected.foreground=\"212\"     Foreground Color (\$GUM_FILE_SELECTED_FOREGROUND)
---file-size.foreground=\"240\"    Foreground Color (\$GUM_FILE_FILE_SIZE_FOREGROUND)" | gum filter --header "Action..." --height ${h})
+--file-size.foreground=\"240\"    Foreground Color (\$GUM_FILE_FILE_SIZE_FOREGROUND)" | gum filter --no-fuzzy --header "Choosed: $(cat ${tmp})" --height ${h})
 	ch=$(echo ${choice} | cut -d' ' -f1)
 		if [ ${ch} == 'ENOUGH' ]; then
 			echo -e "\n" >> ${tmp}
@@ -635,8 +633,7 @@ gum_filter() {
 Usage: gum filter [<options> ...]
 
 Arguments:
-  [<options> ...]    Options to filter.
-	Choosed: $(cat ${tmp})"
+  [<options> ...]    Options to filter."
 	header
 	h=27
 	choice=$(echo "\
@@ -665,7 +662,7 @@ ENOUGH back to main menu   Stop choosing filter
 --limit=1          Maximum number of options to pick
 --no-limit         Pick unlimited number of options (ignores limit)
 --select-if-one    Select the given option if there is only one
---[no-]strict      Only returns if anything matched. Otherwise return Filter" | gum filter --header "Action..." --height ${h})
+--[no-]strict      Only returns if anything matched. Otherwise return Filter" | gum filter --no-fuzzy --header "Choosed: $(cat ${tmp})" --height ${h})
 	ch=$(echo ${choice} | cut -d' ' -f1)
 		if [ ${ch} == 'ENOUGH' ]; then
 			echo -e "\n" >> ${tmp}
@@ -687,15 +684,14 @@ gum_format() {
 Usage: gum format [<template> ...]
 
 Arguments:
-  [<template> ...]    Template string to format (can also be provided via stdin)
-	Choosed: $(cat ${tmp})"
+  [<template> ...]    Template string to format (can also be provided via stdin)"
 	header
 	h=5
 	choice=$(echo "\
 ENOUGH back to main menu  Stop choosing format
 --theme=\"pink\"            Glamour theme to use for markdown formatting (\$GUM_FORMAT_THEME)
 -l --language=\"\"          Programming language to parse code (\$GUM_FORMAT_LANGUAGE)
--t --type=\"markdown\"      Format to use (markdown,template,code,emoji) (\$GUM_FORMAT_TYPE)" | gum filter --header "Action..." --height ${h})
+-t --type=\"markdown\"      Format to use (markdown,template,code,emoji) (\$GUM_FORMAT_TYPE)" | gum filter --no-fuzzy --header "Choosed: $(cat ${tmp})" --height ${h})
 	ch=$(echo ${choice} | cut -d' ' -f1)
 		if [ ${ch} == 'ENOUGH' ]; then
 			echo -e "\n" >> ${tmp}
@@ -714,9 +710,7 @@ gum_input() {
 	tmp="$tmpdir/tmp-input"
 	headertext="Prompt for some input
 
-Usage: gum input
-
-	Choosed: $(cat ${tmp})"
+Usage: gum input"
 	header
 	h=14
 	choice=$(echo "\
@@ -732,7 +726,7 @@ ENOUGH back to main menu           Stop choosing input
 --timeout=0                        Timeout until input aborts (\$GUM_INPUT_TIMEOUT)
 --prompt.foreground=\"\"     Foreground Color (\$GUM_INPUT_PROMPT_FOREGROUND)
 --cursor.foreground=\"212\"  Foreground Color (\$GUM_INPUT_CURSOR_FOREGROUND)
---header.foreground=\"240\"  Foreground Color (\$GUM_INPUT_HEADER_FOREGROUND)" | gum filter --header "Action..." --height ${h})
+--header.foreground=\"240\"  Foreground Color (\$GUM_INPUT_HEADER_FOREGROUND)" | gum filter --no-fuzzy --header "Choosed: $(cat ${tmp})" --height ${h})
 	ch=$(echo ${choice} | cut -d' ' -f1)
 		if [ ${ch} == 'ENOUGH' ]; then
 			echo -e "\n" >> ${tmp}
@@ -755,15 +749,14 @@ gum_join() {
 Usage: gum join <text> ...
 
 Arguments:
-  <text> ...    Text to join.
-	Choosed: $(cat ${tmp})"
+  <text> ...    Text to join."
 	header
 	h=5
 	choice=$(echo "\
 ENOUGH back to main menu  Stop choosing join
 --align=\"left\"            Text alignment
 --horizontal              Join (potentially multi-line) strings horizontally
---vertical                Join (potentially multi-line) strings vertically" | gum filter --header "Action..." --height ${h})
+--vertical                Join (potentially multi-line) strings vertically" | gum filter --no-fuzzy --header "Choosed: $(cat ${tmp})" --height ${h})
 	ch=$(echo ${choice} | cut -d' ' -f1)
 		if [ ${ch} == 'ENOUGH' ]; then
 			echo -e "\n" >> ${tmp}
@@ -785,8 +778,7 @@ gum_log() {
 Usage: gum log <text> ...
 
 Arguments:
-  <text> ...    Text to log
-	Choosed: $(cat ${tmp})"
+  <text> ...    Text to log"
 	header
 	h=16
 	choice=$(echo "\
@@ -804,7 +796,7 @@ ENOUGH back to main menu  Stop choosing log
 --message.foreground=\"\"    Foreground Color (\$GUM_LOG_MESSAGE_FOREGROUND)
 --key.foreground=\"\"        Foreground Color (\$GUM_LOG_KEY_FOREGROUND)
 --value.foreground=\"\"      Foreground Color (\$GUM_LOG_VALUE_FOREGROUND)
---separator.foreground=\"\"  Foreground Color (\$GUM_LOG_SEPARATOR_FOREGROUND)" | gum filter --header "Action..." --height ${h})
+--separator.foreground=\"\"  Foreground Color (\$GUM_LOG_SEPARATOR_FOREGROUND)" | gum filter --no-fuzzy --header "Choosed: $(cat ${tmp})" --height ${h})
 	ch=$(echo ${choice} | cut -d' ' -f1)
 		if [ ${ch} == 'ENOUGH' ]; then
 			echo -e "\n" >> ${tmp}
@@ -826,8 +818,7 @@ gum_pager() {
 Usage: gum pager [<content>]
 
 Arguments:
-  [<content>]    Display content to scroll
-	Choosed: $(cat ${tmp})"
+  [<content>]    Display content to scroll"
 	header
 	h=10
 	choice=$(echo "\
@@ -839,7 +830,7 @@ ENOUGH back to main menu  Stop choosing pager
 --help.foreground=\"241\"             Foreground Color (\$GUM_PAGER_HELP_FOREGROUND)
 --line-number.foreground=\"237\"      Foreground Color (\$GUM_PAGER_LINE_NUMBER_FOREGROUND)
 --match.foreground=\"212\"            Foreground Color (\$GUM_PAGER_MATCH_FOREGROUND)
---match-highlight.foreground=\"235\"  Foreground Color (\$GUM_PAGER_MATCH_HIGH_FOREGROUND)" | gum filter --header "Action..." --height ${h})
+--match-highlight.foreground=\"235\"  Foreground Color (\$GUM_PAGER_MATCH_HIGH_FOREGROUND)" | gum filter --no-fuzzy --header "Choosed: $(cat ${tmp})" --height ${h})
 	ch=$(echo ${choice} | cut -d' ' -f1)
 		if [ ${ch} == 'ENOUGH' ]; then
 			echo -e "\n" >> ${tmp}
@@ -861,8 +852,7 @@ gum_spin() {
 Usage: gum spin <command> ...
 
 Arguments:
-  <command> ...    Command to run
-	Choosed: $(cat ${tmp})"
+  <command> ...    Command to run"
 	header
 	h=9
 	choice=$(echo "\
@@ -873,13 +863,13 @@ ENOUGH back to main menu  Stop choosing spin
 -a --align=\"left\"         Alignment of spinner with regard to the title (\$GUM_SPIN_ALIGN)
 --timeout=0               Timeout until spin command aborts (\$GUM_SPIN_TIMEOUT)
 --spinner.foreground=\"212\"  Foreground Color (\$GUM_SPIN_SPINNER_FOREGROUND)
---title.foreground=\"\"       Foreground Color (\$GUM_SPIN_TITLE_FOREGROUND)" | gum filter --header "Action..." --height ${h})
+--title.foreground=\"\"       Foreground Color (\$GUM_SPIN_TITLE_FOREGROUND)" | gum filter --no-fuzzy --header "Choosed: $(cat ${tmp})" --height ${h})
 	ch=$(echo ${choice} | cut -d' ' -f1)
 		if [ ${ch} == 'ENOUGH' ]; then
 			echo -e "\n" >> ${tmp}
 			echo -e "\nUsing:\n gum $(cat ${tmp})\n"
 			arguments=($(cat ${tmp}))
-			gum "${arguments[@]}" #"$(gum file --file=no --directory)"
+			gum "${arguments[@]}" sleep 3 #"$(gum file --file=no --directory)"
 			header
 		elif [ ${ch} == '-s' ]; then
 			change_spinner
@@ -897,8 +887,7 @@ gum_style() {
 Usage: gum style [<text> ...]
 
 Arguments:
-  [<text> ...]    Text to which to apply the style
-	Choosed: $(cat ${tmp})"
+  [<text> ...]    Text to which to apply the style"
 	header
 	h=17
 	choice=$(echo "\
@@ -917,7 +906,7 @@ ENOUGH back to main menu  Stop choosing style
 --faint                 Faint text (\$FAINT)
 --italic                Italicize text (\$ITALIC)
 --strikethrough         Strikethrough text (\$STRIKETHROUGH)
---underline             Underline text (\$UNDERLINE)" | gum filter --header "Action..." --height ${h})
+--underline             Underline text (\$UNDERLINE)" | gum filter --no-fuzzy --header "Choosed: $(cat ${tmp})" --height ${h})
 	ch=$(echo ${choice} | cut -d' ' -f1)
 		if [ ${ch} == 'ENOUGH' ]; then
 			echo -e "\n" >> ${tmp}
@@ -938,8 +927,7 @@ gum_table() {
 	tmp="$tmpdir/tmp-table"
 	headertext="Render a table of data
 
-Usage: gum table
-	Choosed: $(cat ${tmp})"
+Usage: gum table"
 	header
 	h=13
 	choice=$(echo "\
@@ -954,7 +942,7 @@ ENOUGH back to main menu  Stop choosing table
 --border.foreground=\"\"       Foreground Color (\$GUM_TABLE_BORDER_FOREGROUND)
 --cell.foreground=\"\"         Foreground Color (\$GUM_TABLE_CELL_FOREGROUND)
 --header.foreground=\"\"       Foreground Color (\$GUM_TABLE_HEADER_FOREGROUND)
---selected.foreground=\"212\"  Foreground Color (\$GUM_TABLE_SELECTED_FOREGROUND)" | gum filter --header "Action..." --height ${h})
+--selected.foreground=\"212\"  Foreground Color (\$GUM_TABLE_SELECTED_FOREGROUND)" | gum filter --no-fuzzy --header "Choosed: $(cat ${tmp})" --height ${h})
 	ch=$(echo ${choice} | cut -d' ' -f1)
 		if [ ${ch} == 'ENOUGH' ]; then
 			echo -e "\n" >> ${tmp}
@@ -975,8 +963,7 @@ gum_write() {
 	tmp="$tmpdir/tmp-write"
 	headertext="Prompt for long-form text
 
-Usage: gum write
-	Choosed: $(cat ${tmp})"
+Usage: gum write"
 	header
 	h=21
 	choice=$(echo "\
@@ -999,7 +986,7 @@ ENOUGH back to main menu            Stop choosing write
 --line-number.foreground=\"7\"         Foreground Color (\$GUM_WRITE_LINE_NUMBER_FOREGROUND)
 --header.foreground=\"240\"            Foreground Color (\$GUM_WRITE_HEADER_FOREGROUND)
 --placeholder.foreground=\"240\"       Foreground Color (\$GUM_WRITE_PLACEHOLDER_FOREGROUND)
---prompt.foreground=\"7\"              Foreground Color (\$GUM_WRITE_PROMPT_FOREGROUND)" | gum filter --header "Action..." --height ${h})
+--prompt.foreground=\"7\"              Foreground Color (\$GUM_WRITE_PROMPT_FOREGROUND)" | gum filter --no-fuzzy --header "Choosed: $(cat ${tmp})" --height ${h})
 	ch=$(echo ${choice} | cut -d' ' -f1)
 		if [ ${ch} == 'ENOUGH' ]; then
 			echo -e "\n" >> ${tmp}
@@ -1023,7 +1010,7 @@ Choosed: $(cat ${tmp})"
 	h=X
 	choice=$(echo "\
 ENOUGH back to main menu  Stop choosing X
-X" | gum filter --header "Action..." --height ${h})
+X" | gum filter --no-fuzzy --header "Choosed: $(cat ${tmp})" --height ${h})
 	ch=$(echo ${choice} | cut -d' ' -f1)
 		if [ ${ch} == 'ENOUGH' ]; then
 			echo -e "\nUsing:\n gum $(cat ${tmp})\n"
