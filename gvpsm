@@ -1,0 +1,75 @@
+#!/usr/bin/bash
+# Author: zenobit
+# Description: Uses gum to provide a simple TUI
+# License MIT
+
+email="zenobit@disroot.org"
+XBPS_DISTDIR="/home/zen/void"
+MY_XBPS_REPO="git@github.com:oSoWoSo/VUR.git"
+export XBPS_DISTDIR='/home/zen/void'
+header() {
+    header1=$(gum style --padding '0 1' --border double --border-foreground 57 \
+" __ ___ __ ____ __
+ \ V / '_ (_-< '  \   vpsm - void-packages sources management wrapper for XBPS-SRC
+  \_/| .__/__/_|_|_|  GitHub: https://github.com/sinetoami/vpsm
+     |/
+     ´
+[vpsm] vpsm - Version: heads/tests-0-g8e717b9
+[vpsm] Copyright (c) 2018 Sinésio Neto <sinetoami [at] gmail [dot] com> (GPLv3+)
+[vpsm] XBPS version: XBPS: 0.59.1 API: 20200221")
+
+    header2=$(gum style --padding '0 1' --border double --border-foreground 212 \
+"XBPS_DISTDIR $XBPS_DISTDIR
+repo: $MY_XBPS_REPO
+branch: $(git branch | grep '*')
+PR: $pr_number
+$(gum style --foreground "#04B575" "Heeelp")")
+
+    header3=$(gum style --padding '0 1' --border double --border-foreground 212 \
+    "   My packages:
+$(xmypkgs "$email")")
+    header23=$(gum join --align top "$header2" "$header3")
+    gum join --vertical "$header1" "$header23"
+}
+cd ${XBPS_DISTDIR} && header
+
+choice=$(echo \
+"add-changes (ac) <file>                       - Add work changes in your clone repository.
+add-remote-repo (arr) <remote-name> <url>     - Add new remote repo in your clone repository.
+checkout-branch (co) <branch-name>            - Switch branch.
+commit-changes (cc) <message>                 - Commits changes added.
+create-branch (cb) <branch-name>              - Create a new branch.
+delete-branch (delb) <branch-name>            - Delete a existing branch.
+list-branches (lb)                            - List all branches.
+log (lg) <pkgname>                            - Commit log for <pkgname> XBPS template
+log-graph (lgg)                               - Commit graph log for all commits
+pull (pp) <remote-repo> <branch>              - Pull commit from <remote-repo> <remote-branch>.
+pull-request (pr) [message]                   - Create a pull-request [optional message].
+push-commit (pc) <remote-repo> <branch>       - Push commits to <romote-repo> <remote-branch>.
+update-repo (upr)                             - Pull commits from void-linux official repo.
+binbootstrap (bb)                             - Install bootstrap packages from host repositories into <masterdir>.
+bootstrap-up (bu)                             - Updates bootstrap packages.
+build-environment                             - Configure environment to create binary packages.
+edit-template (et) <pkgname>                  - Edit <pkgname> template.
+install (i) <pkgname>                         - Build binary package for <pkgname> and all required dependencies and install.
+lint (li) <pkgname>                           - Scan XBPS <pkgname> template for common mistakes.
+list (l)                                      - Lists installed packages in <masterdir>.
+mypkgs (mp) [email]                           - List all pkgs maintained by you or by [optional email].
+new (n) <pkgname>                             - Create a new <pkgname> package.
+pkg <pkgname>                                 - Only build binary package for <pkgname> and all required dependencies.
+pkg-test (t) <pkgname>                        - Run longer tests for <pkgname>.
+purge-distfiles (pdistf)                      - Removes all obsolete distfiles in <hostdir>/sources.
+searchbin (sb) <pkgname>                      - Search in <hostdir>/binpkgs for package by <name> (use xbps-query).
+searchsrc (ss) <pkgname>                      - Search in <srcpkgs> for package by <name>.
+show (sw) <pkgname>                           - Show information for the specified package.
+show-build-deps (bdeps) <pkgname>             - Show required build dependencies for <pkgname>.
+show-deps (rdeps) <pkgname>                   - Show required run-time dependencies for <pkgname>.
+uninstall (un) <pkgname>                      - Uninstall and purge distfiles for <pkgname>.
+update-bulk (upb)                             - Rebuilds all packages in the system repositories that are outdated.
+update-check (upc) <pkgname>                  - Check upstream site of <pkgname> for new releases.
+update-sys (ups)                              - Rebuilds packages in system and updates them.
+xgsum <pkgname>                               - Generate SHA256 for <pkgname> template.
+xinstall (xi) <pkgname>                       - Like xbps-install -S <pkgname>, but take cwd repo and sudo/doas/su into account." \
+| gum filter --header "Action..." --height 37)
+
+vpsm $(echo ${choice} | cut -d' ' -f1)
