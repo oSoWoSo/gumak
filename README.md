@@ -12,7 +12,10 @@ Maybe for you to...
 If you wanna learn terminal commands but still don't type to much.
 
 ## Check it
-- gme - Gum Make Executable - Simple TUI for chmod a+-x
 - gumaker - Helps you create glamourous shell scripts.
-
+###
+- gme - Gum Make Executable - Simple TUI for chmod a+-x
+- gvpm - TUI for vpm aka void package manager (xbps)
+- gvpsm - TUI for vpsm aka void source package manager (xbps-src)
+#
 PS: Wait for more nice TUIs...
