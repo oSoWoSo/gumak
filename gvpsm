@@ -70,6 +70,6 @@ update-check (upc) <pkgname>                  - Check upstream site of <pkgname>
 update-sys (ups)                              - Rebuilds packages in system and updates them.
 xgsum <pkgname>                               - Generate SHA256 for <pkgname> template.
 xinstall (xi) <pkgname>                       - Like xbps-install -S <pkgname>, but take cwd repo and sudo/doas/su into account." \
-| gum filter --header "Action..." --height 37)
+| gum filter --no-fuzzy  --height 40)
 
 vpsm $(echo ${choice} | cut -d' ' -f1)
