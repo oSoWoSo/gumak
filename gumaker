@@ -1000,7 +1000,7 @@ show_results() {
 			cat "$temp" >> ${tmpdir}/tmp
 		fi
 	done
-	echo -e "\n\nUsed: (Probably need more work from you...)\n\n $(cat tmp)\n"
+	echo -e "\n\nUsed: (Probably need more work from you...)\n\n $(cat ${tmpdir}/tmp)\n"
 }
 
 #### MENU loop & run & case ####
