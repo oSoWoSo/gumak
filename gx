@@ -1,0 +1,80 @@
+#!/usr/bin/bash
+# Author: zenobit
+# Description: Uses gum to provide a simple TUI
+# License MIT
+
+color="57"
+
+header() {
+	gum style --padding '0 1' --border double --border-foreground $color "TUI for xbps"
+}
+header
+
+choice=$(echo "\
+xbps-alternatives  (XBPS utility to handle alternatives)
+xbps-checkvers     (XBPS utility to check for outdated packages)
+xbps-create        (XBPS utility to create binary packages)
+xbps-dgraph        (XBPS utility to generate package dot(1) graphs)
+xbps-digest        (XBPS utility to generate message digests)
+xbps-fbulk         (XBPS utility to perform a fast bulk build of void-packages)
+xbps-fetch         (XBPS utility to fetch files from URLs)
+xbps-install       (XBPS utility to (re)install and update packages)
+xbps-pkgdb         (XBPS utility to report/fix issues and modify the package database (pkgdb))
+xbps-query         (XBPS utility to query for package and repository information)
+xbps-reconfigure   (XBPS utility to configure installed packages)
+xbps-remove        (XBPS utility to remove packages)
+xbps-rindex        (XBPS utility to manage local binary package repositories)
+xbps-uchroot       (XBPS utility to chroot and bind mount with Linux namespaces)
+xbps-uhelper       (command)
+xbps-uunshare      (XBPS utility to chroot and bind mount with Linux user namespaces)\
+" | gum filter | cut -d' ' -f1)
+
+_create() {
+	choice=$(echo "\
+-A --architecture   Package architecture (e.g: noarch, i686, etc)
+-B --built-with     Package builder string (e.g: xbps-src-30)
+-C --conflicts      Conflicts (blank separated list, e.g: 'foo>=2.0 blah<=2.0')
+-c --changelog      Changelog URL
+-D --dependencies   Dependencies (blank separated list, e.g: 'foo>=1.0_1 blah<2.1')
+-F --config-files   Configuration files (blank separated list, e.g '/etc/foo.conf /etc/foo-blah.conf')
+-H --homepage       Homepage
+-h --help           Show help
+-l --license        License
+-M --mutable-files  Mutable files list (blank separated list, e.g: '/usr/lib/foo /usr/bin/blah')
+-m --maintainer     Maintainer
+-n --pkgver         Package name/version tuple (e.g 'foo-1.0_1')
+-P --provides       Provides (blank separated list, e.g: 'foo-9999 blah-1.0')
+-p --preserve       Enable package preserve boolean
+-q --quiet          Work silently
+-R --replaces       Replaces (blank separated list, e.g: 'foo>=1.0 blah<2.0')
+-r --reverts        Reverts (blank separated list, e.g: '1.0_1 2.0_3')
+-S --long-desc      Long description (80 cols per line)
+-s --desc           Short description (max 80 characters)
+-t --tags           A list of tags/categories (blank separated list)
+-V --version        Prints XBPS release version
+--alternatives      List of available alternatives this pkg provides. This expects a blank separated list of <name>:<symlink>:<target>, e.g 'vi:/usr/bin/vi:/usr/bin/vim foo:/usr/bin/foo:/usr/bin/blah'.
+--build-options     A string with the used build options
+--compression       Compression format: none, gzip, bzip2, lz4, xz, zstd (default)
+--shlib-provides    List of provided shared libraries (blank separated list, e.g 'libfoo.so.1 libblah.so.2')
+--shlib-requires    List of required shared libraries (blank separated list, e.g 'libfoo.so.1 libblah.so.2')\
+" | gum filter | cut -d' ' -f1)
+}
+
+case ${choice} in
+	xbps-alternatives) ;;
+	xbps-checkvers) ;;
+	xbps-create) _create;;
+	xbps-dgraph) ;;
+	xbps-digest) ;;
+	xbps-fbulk) ;;
+	xbps-fetch) ;;
+	xbps-install) ;;
+	xbps-pkgdb) ;;
+	xbps-query) ;;
+	xbps-reconfigure) ;;
+	xbps-remove) ;;
+	xbps-rindex) ;;
+	xbps-uchroot) ;;
+	xbps-uhelper) ;;
+	xbps-uunshare) ;;
+esac
