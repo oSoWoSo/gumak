@@ -1,4 +1,6 @@
-# Collection of TUI utililities
+### gumák
+and
+# Collection of other TUIs
 which use [gum](https://github.com/charmbracelet/gum)
 ### for various purposes
 # Not finished but usable
