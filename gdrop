@@ -1,0 +1,112 @@
+#!/usr/bin/bash
+# Author: zenobit
+# Description: Uses gum to provide a simple TUI
+# License MIT
+
+# - CHANGE all X to whats needed
+
+# color
+c="#295340"
+# gum filter
+export GUM_FILTER_INDICATOR_FOREGROUND=${c}
+export GUM_FILTER_SELECTED_PREFIX_FOREGROUND=${c}
+export GUM_FILTER_HEADER_FOREGROUND=${c}
+export GUM_FILTER_CURSOR_TEXT_FOREGROUND=${c}
+# gum style
+export GUM_STYLE_FOREGROUND=${c}
+export GUM_STYLE_BORDER_FOREGROUND=${c}
+export GUM_STYLE_BORDER="rounded"
+# filter height
+
+
+header() {
+	gum style \
+	--padding '0 1' \
+	--border rounded \
+	--border-foreground $c \
+	"$headertext"
+}
+headertext="TUI for tdrop"
+header
+
+# first one
+tdrop_() {
+	headertext="usage: tdrop [options] <program> [program options ...]
+                       or 'current'
+                       or one of 'auto_show'/'auto_hide'/'toggle_auto_hide'
+                       or 'hide_all'
+                       or 'foreach'"
+	header
+	h=37
+	choice=$(echo "\
+-h height     specify a height for a newly created term (default: 45%)
+-w width      specify a width for a newly created term (default: 100%)
+-x pos        specify x offset for a newly created term (default: 0)
+-y pos        specify y offset for a newly created term (default: 1, see man)
+-s name       name for tmux/tmuxinator/tmuxifier/tmuxp session (supported terminal required)
+-n num        num or extra text; only needed if for the purpose of using multiple dropdowns of same program
+-c cmd        provide a pre-create command
+-C cmd        provide a post-create command
+-l cmd        provide a command to float the window before it is mapped
+-L cmd        provide a command to float the window after it is mapped
+-p cmd        provide a pre-map command
+-P cmd        provide a post-map command
+-u cmd        provide a pre-unmap command
+-U cmd        provide a post-unmap command
+-d XxY        give decoration/border size to accurately restore window position; only applicable with auto_show
+-S            can be used to fix saved geometry with auto_hide; see manpage
+-i cmd        provide a command to detect whether the current window is a floating window; on applicable with auto_hide
+-f flags      specify flags/options to be used when creating the term or window (e.g. -f '--title mytitle'; default: none).
+-a            automatically detect window manager and set relevant options (e.g. this makes specifying -l/-L, -d, and -i unnecessary for supported WMs) (default: false)
+-m            for use with multiple monitors and only with dropdowns (i.e. not for auto_show or auto_hide); convert percentages used for width or height to values relative to the size of the current monitor and force resizing of the dropdown when the monitor changes (default: false)
+-t            use mouse pointer location for detecting which monitor is the current one
+-A            always show/activate the window if it is not focused
+-r            save geometry when hiding, restore geometry when showing
+-N            same as -x '' -y '' -w '' -h '' (do not use with those options)
+--wm          set the window manager name to mimic another window manager (for use with -a)
+--class name  manually specify the class of the window (can be obtained with xprop)
+--name name   set a new name for the dropdown window
+--clear       clear saved window id; useful after accidentally make a window a dropdown (e.g. '$ tdrop --clear current')
+--no-cancel   don't cancel auto-showing (default is to prevent this when manually toggling a window after it is auto-hidden)
+--timeout     set the timeout (in seconds) that tdrop will wait for a window to appear before giving up in case the program fails to start (default: 10)
+--debug       print debugging information to /tmp/tdrop_<user>/log" | gum filter --header "flags
+NOTE: This flag is deprecated. Specify flags after the program name
+instead. This flag may be removed in the future.
+Caution: if there is a tmux session specified (with -s), the option
+to execute a program (usually -e for terminal programs) is
+implicitly added by tdrop" --height ${h})
+	ch=$(echo ${choice} | cut -d' ' -f1)
+	echo -n "${ch} " > "tmp-$ch"
+}
+
+# other ones
+X_X() {
+	headertext="X"
+	header
+	h=X
+	choice=$(echo "\
+ENOUGH                         Stop choosing arguments
+X
+EXIT" | gum filter --header "Action..." --height ${h})
+	ch=$(echo ${choice} | cut -d' ' -f1)
+		if [ ${ch} == 'ENOUGH' ]; then
+			echo -e "\n" >> tmp-X
+			echo -e "\nUsing:\n X $(cat tmp)\n"
+			arguments=($(cat tmp-X))
+			X "${arguments[@]}" #"$(gum file --file=no --directory)"
+		else
+			echo -n "${ch} " >> tmp-X
+			X_X
+		fi
+}
+
+tdrop_
+
+case "${ch}" in
+	X)  X_X;;
+	X) X_X;;
+	help)  show_help;;
+	EXIT)  exit 0;;
+esac
+
+echo -e "\nUsed:\n X $(cat tmp)\n"
