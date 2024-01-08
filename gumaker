@@ -537,7 +537,7 @@ ENOUGH back to main menu  Stop choosing choose
 		echo -e "\n" >> ${tmp}
 		echo -e "\nUsing:\n gum $(cat ${tmp})\n"
 		arguments=($(cat ${tmp}))
-		gum "${arguments[@]}" #"$(gum file --file=no --directory)"
+		gum "${arguments[@]}" XXXX YYYY #"$(gum file --file=no --directory)"
 	else
 		echo -n "${ch} " >> ${tmp}
 		gum_choose
@@ -568,7 +568,7 @@ ENOUGH back to main menu  Stop choosing confirm
 		echo -e "\n" >> ${tmp}
 		echo -e "\nUsing:\n gum $(cat ${tmp})\n"
 		arguments=($(cat ${tmp}))
-		gum "${arguments[@]}" #"$(gum file --file=no --directory)"
+		gum "${arguments[@]}" XXXX #"$(gum file --file=no --directory)"
 	else
 		echo -n "${ch} " >> ${tmp}
 		gum_confirm
@@ -684,7 +684,7 @@ ENOUGH back to main menu  Stop choosing format
 		echo -e "\n" >> ${tmp}
 		echo -e "\nUsing:\n gum $(cat ${tmp})\n"
 		arguments=($(cat ${tmp}))
-		gum "${arguments[@]}" #"$(gum file --file=no --directory)"
+		gum "${arguments[@]}" "Here is some random text" #"$(gum file --file=no --directory)"
 	else
 		echo -n "${ch} " >> ${tmp}
 		gum_format
@@ -744,7 +744,7 @@ ENOUGH back to main menu  Stop choosing join
 		echo -e "\n" >> ${tmp}
 		echo -e "\nUsing:\n gum $(cat ${tmp})\n"
 		arguments=($(cat ${tmp}))
-		gum "${arguments[@]}" #"$(gum file --file=no --directory)"
+		gum "${arguments[@]}" XXXX YYYY #"$(gum file --file=no --directory)"
 	else
 		echo -n "${ch} " >> ${tmp}
 		gum_join
@@ -782,7 +782,7 @@ ENOUGH back to main menu  Stop choosing log
 		echo -e "\n" >> ${tmp}
 		echo -e "\nUsing:\n gum $(cat ${tmp})\n"
 		arguments=($(cat ${tmp}))
-		gum "${arguments[@]}" #"$(gum file --file=no --directory)"
+		gum "${arguments[@]}" "#TODO" #"$(gum file --file=no --directory)"
 	else
 		echo -n "${ch} " >> ${tmp}
 		gum_log
@@ -814,7 +814,7 @@ ENOUGH back to main menu  Stop choosing pager
 		echo -e "\n" >> ${tmp}
 		echo -e "\nUsing:\n gum $(cat ${tmp})\n"
 		arguments=($(cat ${tmp}))
-		gum "${arguments[@]}" #"$(gum file --file=no --directory)"
+		man bash | gum "${arguments[@]}" #"$(gum file --file=no --directory)"
 	else
 		echo -n "${ch} " >> ${tmp}
 		gum_pager
@@ -886,7 +886,7 @@ ENOUGH back to main menu  Stop choosing style
 		echo -e "\n" >> ${tmp}
 		echo -e "\nUsing:\n gum $(cat ${tmp})\n"
 		arguments=($(cat ${tmp}))
-		gum "${arguments[@]}" #"$(gum file --file=no --directory)"
+		gum "${arguments[@]}" XXXX #"$(gum file --file=no --directory)"
 	elif [ ${ch} == '--border="none"' ]; then
 		change_borders
 	else
@@ -920,7 +920,7 @@ ENOUGH back to main menu  Stop choosing table
 		echo -e "\n" >> ${tmp}
 		echo -e "\nUsing:\n gum $(cat ${tmp})\n"
 		arguments=($(cat ${tmp}))
-		gum "${arguments[@]}" #"$(gum file --file=no --directory)"
+		gum "${arguments[@]}" XXXX YYYY ZZZZ #"$(gum file --file=no --directory)"
 	elif [ ${ch} == '-b' ]; then
 		change_borders
 	else
@@ -984,7 +984,7 @@ X" | gum filter --no-fuzzy --header "Choosed: $(cat ${tmp})" --height ${h})
 	if [ ${ch} == 'ENOUGH' ]; then
 		echo -e "\nUsing:\n gum $(cat ${tmp})\n"
 		arguments=($(cat ${tmp}))
-		gum "${arguments[@]}" #"$(gum file --file=no --directory)"
+		gum "${arguments[@]}" XXXX #"$(gum file --file=no --directory)"
 	else
 		echo -n "${ch} " >> ${tmp}
 		gum_X
