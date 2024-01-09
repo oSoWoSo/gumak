@@ -68,7 +68,7 @@ install_gum_go() {
 gum_install
 
 #### SETTINGS ####
-progname="${progname:="${0##*/}"}"
+progname="gumák"
 version='0.005'
 # color
 c=#295340
@@ -81,7 +81,7 @@ export GUM_STYLE_FOREGROUND=${c}
 export GUM_STYLE_BORDER_FOREGROUND=${c}
 export GUM_STYLE_BORDER=rounded
 # create temp dir
-tmpdir="/tmp/${progname}"
+tmpdir="/tmp/gumak"
 mkdir -p ${tmpdir}
 
 #### HEADERS ####
@@ -457,7 +457,33 @@ $(gum style --bold ${tmpdir}/tmp-*)" && rm -fv ${tmpdir}/tmp-*
 
 #### HELP #### #TODO
 _help_me() {
-	gum style
+	proghead=$(gum style --border rounded --align center --bold --width 23 "${progname} ${version}")
+	helpmsg=$(gum style --border rounded --align center --border-foreground="${c}" "\
+ ${progname} helps you quickly generate gum TUI commands for your bash script.
+
+In filter menus use keyboard for filtering.
+Ctrl +C will stop
+Ctrl +D will confirm changes (write)
+
+Just run it anywhere. And you will instantly know what to do..
+Try some options and see ouput on screen, also saved to temp folder.
+(/tmp/gumak/)
+
+ If you run same choice again it will rewrite saved commands.
+(eq. If i run choose option twice, second run will overwrite tmp-choose from first run, others stay untouched)
+
+If you exit, commands are still stored in temp folder.
+Also all commands are copied to one file /tmp/gumak/tmp
+for you to copy them, or you can do that directly from terminal output
+
+For now are commands rough. Not all of them works as generated. (Will be improved)
+So user needs to fill and repair missed parts.
+And of course implement in own script...
+
+PS: Why I am doing this? Because i wanna create TUIs for everything.
+    coreutils enhance to TUIutils etc..")
+	gum join --vertical --align center "$proghead" "$helpmsg"
+
 }
 
 #### MENUS ####
@@ -466,12 +492,7 @@ gum_() {
 	headertext=$(gum style \
 	--border rounded \
 	--align center "\
-$(gum style ${progname}) TUI for gum
-It will quickly generate rough commands for you.
-Not all options to choose yet, so commands will
-NOT work without filling missing options. (for now)
-
-$(gum -v)
+$(gum style ${progname}) TUI for $(gum -v)
 A tool for [38;5;212mglamorous[0m shell scripts.
 Usage: gum <command>")
 	header
@@ -498,6 +519,8 @@ EXIT     Quit ${progname}" | gum filter --no-fuzzy --height ${h})
 		echo "Goodbye"
 	elif [ ${ch} == 'CLEAR' ]; then
 		echo "Temp files deleted"
+	elif [ ${ch} == 'HELP' ]; then
+		echo "Let's create some TUIs later?'"
 	else
 		echo -n "${ch} " > "$tmpdir/tmp-$ch"
 	fi
