@@ -34,5 +34,3 @@ If you wanna learn terminal commands but still don't type to much.
 - ... check yourself
 #
 PS: Wait for more nice TUIs...
-
-We got a :star: from [@zen0bit](https://github.com/zen0bit)
