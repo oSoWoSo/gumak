@@ -1,0 +1,45 @@
+
+#!/usr/bin/bash
+# Author: zenobit
+# Description: Uses gum to provide a simple TUI
+# License MIT
+
+# - CHANGE X
+
+# color
+c="#295340"
+# gum filter
+export GUM_FILTER_INDICATOR_FOREGROUND=${c}
+export GUM_FILTER_SELECTED_PREFIX_FOREGROUND=${c}
+export GUM_FILTER_HEADER_FOREGROUND=${c}
+export GUM_FILTER_CURSOR_TEXT_FOREGROUND=${c}
+# gum style
+export GUM_STYLE_FOREGROUND="212"
+# filter height
+h=6
+
+header() {
+	gum style \
+	--padding '0 1' \
+	--border rounded \
+	--align center \
+	--border-foreground $c \
+	"Create the DIRECTORY(ies), if they do not already exist.
+
+Usage: mkdir [OPTION]... DIRECTORY...
+
+GNU coreutils online help: <https://www.gnu.org/software/coreutils/>
+Full documentation <https://www.gnu.org/software/coreutils/mkdir>
+or available locally via: info '(coreutils) mkdir invocation'"
+}
+header
+echo "#TODO --mode?, --context?"
+choice=$(echo "Run without special argument
+-m --mode=MODE   set file mode (as in chmod), not a=rwx - umask
+-p --parents     no error if existing, make parent directories as needed, with their file modes unaffected by any -m option.
+-v --verbose     print a message for each created directory set SELinux security context of each created directory to the default type
+--context[=CTX]  like -Z, or if CTX is specified then set the SELinux or SMACK security context to CTX" | gum filter --header "Action..." --height $h)
+case "${choice}" in
+	'Run without special argument') mkdir ${1};;
+	*) mkdir $(echo ${choice} | cut -d' ' -f1) ${1}
+esac

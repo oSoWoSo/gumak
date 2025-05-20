@@ -1,0 +1,35 @@
+Usage: gum table
+
+Render a table of data
+
+Flags:
+  -h, --help                   Show context-sensitive help.
+  -v, --version                Print the version number
+
+  -s, --separator=","          Row separator
+  -c, --columns=COLUMNS,...    Column names
+  -w, --widths=WIDTHS,...      Column widths
+      --height=10              Table height
+  -p, --print                  static print
+  -f, --file=""                file path
+  -b, --border="rounded"       border style
+
+Style Flags
+  --border.foreground=""         Foreground Color ($GUM_TABLE_BORDER_FOREGROUND)
+  --cell.foreground=""           Foreground Color ($GUM_TABLE_CELL_FOREGROUND)
+  --header.foreground=""         Foreground Color ($GUM_TABLE_HEADER_FOREGROUND)
+  --selected.foreground="212"    Foreground Color
+                                 ($GUM_TABLE_SELECTED_FOREGROUND)
+
+
+-s --separator=\",\"          Row separator
+-c --columns=COLUMNS,...    Column names
+-w --widths=WIDTHS,...      Column widths
+--height=10              Table height
+-p --print                  static print
+-f --file=\"\"                file path
+-b --border=\"rounded\"       border style
+--border.foreground=\"\"         Foreground Color (\$GUM_TABLE_BORDER_FOREGROUND)
+--cell.foreground=\"\"           Foreground Color (\$GUM_TABLE_CELL_FOREGROUND)
+--header.foreground=\"\"         Foreground Color (\$GUM_TABLE_HEADER_FOREGROUND)
+--selected.foreground=\"212\"    Foreground Color (\$GUM_TABLE_SELECTED_FOREGROUND)

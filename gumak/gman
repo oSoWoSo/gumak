@@ -1,0 +1,2 @@
+#!/usr/bin/bash
+man ${1} || gum confirm "Look for ${1} in remote man pages?" && xmandoc ${1}

@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+# Author: zenobit
+# Description: Uses gum to provide a simple TUI
+# License MIT
+
+
+# change color as you wish
+c="#295340"
+export GUM_FILTER_INDICATOR_FOREGROUND=${c}
+export GUM_FILTER_SELECTED_PREFIX_FOREGROUND=${c}
+export GUM_FILTER_HEADER_FOREGROUND=${c}
+export GUM_FILTER_CURSOR_TEXT_FOREGROUND=${c}
+h="21"
+header() {
+	gum style \
+	--padding '0 1' \
+	--align center \
+	--border rounded \
+	--border-foreground $c \
+"\
+TUI for atuin 17.2.1
+Ellie Huxtable <e@elm.sh>
+Magical shell history\
+"
+}
+header
+
+choice=$(echo "\
+history          Manipulate shell history
+import           Import shell history from file
+stats            Calculate statistics for your history
+search           Interactive history search
+sync             Sync with the configured server
+login            Login to the configured server
+logout           Log out
+register         Register with the configured server
+key              Print the encryption key for transfer to another machine
+status
+account
+kv
+default-config   Print example configuration
+server           Start an atuin server
+init             Output shell setup
+uuid             Generate a UUID
+contributors
+gen-completions  Generate shell completions
+help             Print this message or the help of the given subcommand(s)
+-h, --help     Print help
+-V, --version  Print version" | gum filter --header "Action..." --height ${h})
+
+commands() {
+	h=5
+	choice=$(echo "\
+start  Begins a new command in the history
+end    Finishes a new command in the history (adds time, exit code)
+list   List all items in history
+last   Get the last command ran
+help   Print this message or the help of the given subcommand(s)" | gum filter --header "Action..." --height ${h})
+
+}
+
+
+atuin $(echo ${choice} ${command} | cut -d' ' -f1)

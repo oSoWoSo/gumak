@@ -1,0 +1,48 @@
+Usage: gum file [<path>]
+
+Pick a file from a folder
+
+Arguments:
+  [<path>]    The path to the folder to begin traversing ($GUM_FILE_PATH)
+
+Flags:
+  -h, --help          Show context-sensitive help.
+  -v, --version       Print the version number
+
+  -c, --cursor=">"    The cursor character ($GUM_FILE_CURSOR)
+  -a, --all           Show hidden and 'dot' files ($GUM_FILE_ALL)
+      --file          Allow files selection ($GUM_FILE_FILE)
+      --directory     Allow directories selection ($GUM_FILE_DIRECTORY)
+      --height=0      Maximum number of files to display ($GUM_FILE_HEIGHT)
+      --timeout=0     Timeout until command aborts without a selection
+                      ($GUM_FILE_TIMEOUT)
+
+Style Flags
+  --cursor.foreground="212"       Foreground Color ($GUM_FILE_CURSOR_FOREGROUND)
+  --symlink.foreground="36"       Foreground Color
+                                  ($GUM_FILE_SYMLINK_FOREGROUND)
+  --directory.foreground="99"     Foreground Color
+                                  ($GUM_FILE_DIRECTORY_FOREGROUND)
+  --file.foreground=""            Foreground Color ($GUM_FILE_FILE_FOREGROUND)
+  --permissions.foreground="244"
+                                  Foreground Color
+                                  ($GUM_FILE_PERMISSIONS_FOREGROUND)
+  --selected.foreground="212"     Foreground Color
+                                  ($GUM_FILE_SELECTED_FOREGROUND)
+  --file-size.foreground="240"    Foreground Color
+                                  ($GUM_FILE_FILE_SIZE_FOREGROUND)
+
+
+-c, --cursor=\">\"                The cursor character (\$GUM_FILE_CURSOR)
+-a, --all                         Show hidden and 'dot' files (\$GUM_FILE_ALL)
+--file                            Allow files selection (\$GUM_FILE_FILE)
+--directory                       Allow directories selection (\$GUM_FILE_DIRECTORY)
+--height=0                        Maximum number of files to display (\$GUM_FILE_HEIGHT)
+--timeout=0                       Timeout until command aborts without a selection(\$GUM_FILE_TIMEOUT)
+--cursor.foreground=\"212\"       Foreground Color (\$GUM_FILE_CURSOR_FOREGROUND)
+--symlink.foreground=\"36\"       Foreground Color (\$GUM_FILE_SYMLINK_FOREGROUND)
+--directory.foreground=\"99\"     Foreground Color (\$GUM_FILE_DIRECTORY_FOREGROUND)
+--file.foreground=""              Foreground Color (\$GUM_FILE_FILE_FOREGROUND)
+--permissions.foreground=\"244\"  Foreground Color (\$GUM_FILE_PERMISSIONS_FOREGROUND)
+--selected.foreground=\"212\"     Foreground Color (\$GUM_FILE_SELECTED_FOREGROUND)
+--file-size.foreground=\"240\"    Foreground Color (\$GUM_FILE_FILE_SIZE_FOREGROUND)

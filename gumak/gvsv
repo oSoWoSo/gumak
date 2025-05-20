@@ -1,0 +1,39 @@
+ __   _______   __
+ \ \ / / __\ \ / /   Void Service Manager
+  \ V /\__ \\ V /    Source: https://github.com/bahamas10/vsv
+   \_/ |___/ \_/     MIT License
+   -------------
+    Manage and view runit services
+    Made specifically for Void Linux but should work anywhere
+    Author: Dave Eddy <dave@daveeddy.com> (bahamas10)
+
+vsv 2.0.0
+Runit service manager CLI
+
+USAGE:
+    vsv [OPTIONS] [SUBCOMMAND]
+
+Any other subcommand gets passed directly to the 'sv' command, see sv(1) for
+the full list of subcommands and information about what each does specifically.
+
+
+
+
+
+
+-c --color <yes|no|auto>    Enable or disable color output
+-d --dir <dir>              Directory to look into, defaults to env SVDIR or /var/service if unset
+-h --help                   Print help information
+-l --log                    Show log processes, this is a shortcut for `status -l`
+-t --tree                   Tree view, this is a shortcut for `status -t`
+-u --user                   User mode, this is a shortcut for `-d ~/runit/service`
+-v --verbose                Increase Verbosity
+-V --version                Print version information
+disable    Disable service(s)
+enable     Enable service(s)
+help       Print this message or the help of the given subcommand(s)
+status     Show process status
+start <service>           Start the service
+stop <service>            Stop the service
+restart <service>         Restart the service
+reload <service>          Reload the service (send SIGHUP)
