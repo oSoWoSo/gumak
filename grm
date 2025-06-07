@@ -1,0 +1,65 @@
+#!/usr/bin/bash
+# Author: zenobit
+# Description: Uses gum to provide a simple TUI
+# License MIT
+
+# - CHANGE X
+
+# color
+c="#295340"
+# gum filter
+export GUM_FILTER_INDICATOR_FOREGROUND=${c}
+export GUM_FILTER_SELECTED_PREFIX_FOREGROUND=${c}
+export GUM_FILTER_HEADER_FOREGROUND=${c}
+export GUM_FILTER_CURSOR_TEXT_FOREGROUND=${c}
+# gum style
+export GUM_STYLE_FOREGROUND=${c}
+# filter height
+h=10
+
+header() {
+	gum style \
+	--padding '0 1' \
+	--border rounded \
+	--align center \
+	--border-foreground $c \
+	"\
+TUI for $(rm --version | grep 'rm ')
+
+Remove (unlink) the FILE(s).
+
+Usage: rm [OPTION]... [FILE]...
+
+By default, rm does not remove directories.  Use the --recursive (-r or -R)
+option to remove each listed directory, too, along with all of its contents.
+
+To remove a file whose name starts with a '-', for example '-foo',
+use one of these commands:
+  rm -- -foo
+
+  rm ./-foo
+
+Note that if you use rm to remove a file, it might be possible to recover
+some of its contents, given sufficient expertise and/or time.  For greater
+assurance that the contents are truly unrecoverable, consider using shred(1).
+
+GNU coreutils online help: <https://www.gnu.org/software/coreutils/>
+Full documentation <https://www.gnu.org/software/coreutils/rm>
+or available locally via: info '(coreutils) rm invocation'
+"
+}
+header
+
+choice=$(echo "\
+-f --force             ignore nonexistent files and arguments, never prompt
+-i                     prompt before every removal
+-I                     prompt once before removing more than three files, or when removing recursively; less intrusive than -i, while still giving protection against most mistakes
+--interactive[=WHEN]   prompt according to WHEN: never, once (-I), or always (-i); without WHEN, prompt always
+--one-file-system      when removing a hierarchy recursively, skip any directory that is on a file system different from that of the corresponding command line argument
+--no-preserve-root     do not treat '/' specially
+--preserve-root[=all]  do not remove '/' (default); with 'all', reject any command line argument on a separate device from its parent
+-r -R, --recursive     remove directories and their contents recursively
+-d --dir               remove empty directories
+-v --verbose           explain what is being done" | gum filter --header "Action..." --height $h)
+
+rm $(echo ${choice} | cut -d' ' -f1) ${1}
