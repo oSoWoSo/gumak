@@ -1,0 +1,35 @@
+Usage: gum pager [<content>]
+
+Scroll through a file
+
+Arguments:
+  [<content>]    Display content to scroll
+
+Flags:
+  -h, --help                 Show context-sensitive help.
+  -v, --version              Print the version number
+
+      --show-line-numbers    Show line numbers
+      --soft-wrap            Soft wrap lines
+      --timeout=0            Timeout until command exits ($GUM_PAGER_TIMEOUT)
+
+Style Flags
+  --foreground=""             Foreground Color ($GUM_PAGER_FOREGROUND)
+  --help.foreground="241"     Foreground Color ($GUM_PAGER_HELP_FOREGROUND)
+  --line-number.foreground="237"
+                              Foreground Color
+                              ($GUM_PAGER_LINE_NUMBER_FOREGROUND)
+  --match.foreground="212"    Foreground Color ($GUM_PAGER_MATCH_FOREGROUND)
+  --match-highlight.foreground="235"
+                              Foreground Color
+                              ($GUM_PAGER_MATCH_HIGH_FOREGROUND)
+
+
+--show-line-numbers    Show line numbers
+--soft-wrap            Soft wrap lines
+--timeout=0            Timeout until command exits (\$GUM_PAGER_TIMEOUT)
+--foreground=\"\"                     Foreground Color (\$GUM_PAGER_FOREGROUND)
+--help.foreground=\"241\"             Foreground Color (\$GUM_PAGER_HELP_FOREGROUND)
+--line-number.foreground=\"237\"      Foreground Color (\$GUM_PAGER_LINE_NUMBER_FOREGROUND)
+--match.foreground=\"212\"            Foreground Color (\$GUM_PAGER_MATCH_FOREGROUND)
+--match-highlight.foreground=\"235\"  Foreground Color (\$GUM_PAGER_MATCH_HIGH_FOREGROUND)
