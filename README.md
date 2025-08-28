@@ -36,3 +36,5 @@ If you wanna learn terminal commands but still don't type to much.
 PS: Wait for more nice TUIs...
 
 We got a :star: from [@emaadali](https://github.com/emaadali)
+
+We got a :star: from [@cmander159](https://github.com/cmander159)
