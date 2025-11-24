@@ -9,10 +9,79 @@ MODE="${POLKIT_AGENT_MODE:-dbus}"  # dbus, sudo, or doas
 LOG_FILE="/tmp/polkit-agent-gum.log"
 PID_FILE="/tmp/polkit-agent-gum.pid"
 
+# Check if polkit daemon is running
+check_polkit_daemon() {
+    if ! pgrep -x "polkitd" > /dev/null 2>&1; then
+        log "WARNING: polkitd daemon is not running"
+        return 1
+    fi
+
+    # Check if polkit service is available on D-Bus
+    if ! gdbus introspect --system \
+        --dest org.freedesktop.PolicyKit1 \
+        --object-path /org/freedesktop/PolicyKit1/Authority \
+        &> /dev/null; then
+        log "WARNING: PolicyKit1 service not available on D-Bus"
+        return 1
+    fi
+
+    return 0
+}
+
+# Detect init system
+detect_init_system() {
+    if [ -d /run/runit ]; then
+        echo "runit"
+    elif command -v systemctl &> /dev/null && systemctl --version &> /dev/null; then
+        echo "systemd"
+    elif [ -f /sbin/openrc ] || [ -d /run/openrc ]; then
+        echo "openrc"
+    else
+        echo "unknown"
+    fi
+}
+
+# Start polkit daemon based on init system
+start_polkit_daemon() {
+    local init_system=$(detect_init_system)
+
+    log "Detected init system: $init_system"
+
+    case "$init_system" in
+        runit)
+            log "Starting polkit with runit"
+            if [ -d /var/service/polkitd ]; then
+                sudo sv start polkitd 2>/dev/null
+            elif [ -d /etc/sv/polkitd ]; then
+                sudo ln -sf /etc/sv/polkitd /var/service/ 2>/dev/null
+                sudo sv start polkitd 2>/dev/null
+            else
+                # Start manually
+                sudo /usr/lib/polkit-1/polkitd --no-debug &
+            fi
+            ;;
+        systemd)
+            log "Starting polkit with systemd"
+            sudo systemctl start polkit 2>/dev/null
+            ;;
+        openrc)
+            log "Starting polkit with OpenRC"
+            sudo rc-service polkit start 2>/dev/null
+            ;;
+        *)
+            log "Unknown init system, starting manually"
+            sudo /usr/lib/polkit-1/polkitd --no-debug &
+            ;;
+    esac
+
+    sleep 2
+}
+
 # Check dependencies
 check_dependencies() {
     if ! command -v gum &> /dev/null; then
         echo "Error: gum is not installed."
+        echo "  Void Linux: sudo xbps-install -S gum"
         echo "  Arch: sudo pacman -S gum"
         echo "  Debian/Ubuntu: See https://github.com/charmbracelet/gum"
         exit 1
@@ -21,18 +90,73 @@ check_dependencies() {
     if [ "$MODE" = "dbus" ]; then
         if ! command -v gdbus &> /dev/null; then
             echo "Error: gdbus is not installed."
+            echo "  Void Linux: sudo xbps-install -S glib"
             echo "  Debian/Ubuntu: sudo apt install libglib2.0-bin"
             echo "  Arch: sudo pacman -S glib2"
             exit 1
         fi
+
+        # Check if polkit is installed
+        if ! command -v pkexec &> /dev/null && ! command -v polkitd &> /dev/null; then
+            gum style --foreground 196 \
+                "❌ Polkit is not installed!" \
+                "" \
+                "Install it with:" \
+                "  Void Linux: sudo xbps-install -S polkit" \
+                "  Arch: sudo pacman -S polkit" \
+                "  Debian/Ubuntu: sudo apt install polkitd policykit-1" \
+                "  Fedora: sudo dnf install polkit"
+            exit 1
+        fi
+
+        # Check if polkit daemon is running
+        if ! check_polkit_daemon; then
+            local init_system=$(detect_init_system)
+
+            gum style --foreground 11 \
+                "⚠️  Polkit daemon is not running or not accessible" \
+                "" \
+                "Detected init system: $init_system" \
+                "Trying to start polkit daemon..." \
+                "" \
+                "Manual start options:" \
+                "  Runit: sudo sv start polkitd" \
+                "  Systemd: sudo systemctl start polkit" \
+                "  OpenRC: sudo rc-service polkit start" \
+                "  Manual: sudo /usr/lib/polkit-1/polkitd --no-debug &"
+
+            # Try to start polkit daemon
+            start_polkit_daemon
+
+            # Check again
+            if ! check_polkit_daemon; then
+                gum style --foreground 196 \
+                    "❌ Failed to start polkit daemon" \
+                    "" \
+                    "Void Linux runit service setup:" \
+                    "  1. Check if service exists: ls -l /etc/sv/polkitd" \
+                    "  2. Enable service: sudo ln -s /etc/sv/polkitd /var/service/" \
+                    "  3. Start service: sudo sv start polkitd" \
+                    "  4. Check status: sudo sv status polkitd" \
+                    "" \
+                    "You can still use sudo or doas mode:" \
+                    "  $0 --mode sudo" \
+                    "  $0 --mode doas"
+                exit 1
+            else
+                gum style --foreground 10 "✅ Polkit daemon started successfully"
+            fi
+        fi
     elif [ "$MODE" = "sudo" ]; then
         if ! command -v sudo &> /dev/null; then
             echo "Error: sudo is not installed."
+            echo "  Void Linux: sudo xbps-install -S sudo"
             exit 1
         fi
     elif [ "$MODE" = "doas" ]; then
         if ! command -v doas &> /dev/null; then
             echo "Error: doas is not installed."
+            echo "  Void Linux: sudo xbps-install -S opendoas"
             echo "  Arch: sudo pacman -S opendoas"
             echo "  Debian/Ubuntu: sudo apt install doas"
             exit 1
@@ -174,7 +298,7 @@ notify_polkit_success() {
     local cookie="$1"
     local identity="$2"
 
-    gdbus call --session \
+    gdbus call --system \
         --dest "$DBUS_SERVICE" \
         --object-path "/org/freedesktop/PolicyKit1/Authority" \
         --method org.freedesktop.PolicyKit1.Authority.AuthenticationAgentResponse2 \
@@ -188,7 +312,7 @@ notify_polkit_success() {
 notify_polkit_failure() {
     local cookie="$1"
 
-    gdbus call --session \
+    gdbus call --system \
         --dest "$DBUS_SERVICE" \
         --object-path "/org/freedesktop/PolicyKit1/Authority" \
         --method org.freedesktop.PolicyKit1.Authority.AuthenticationAgentResponse2 \
@@ -210,22 +334,26 @@ register_agent() {
         exit 1
     fi
 
-    # Register agent with polkit authority
-    local subject="unix-session:$(loginctl show-session $(loginctl | grep $(whoami) | awk '{print $1}' | head -1) -p Id --value 2>/dev/null || echo $(whoami))"
+    # Register agent with polkit authority - use system bus for polkit
+    local subject="unix-process:$:0"
 
     log "Registering with subject: $subject"
 
-    # Call RegisterAuthenticationAgent
-    gdbus call --session \
+    # Call RegisterAuthenticationAgent on system bus
+    local register_output
+    register_output=$(gdbus call --system \
         --dest "$DBUS_SERVICE" \
         --object-path "/org/freedesktop/PolicyKit1/Authority" \
         --method org.freedesktop.PolicyKit1.Authority.RegisterAuthenticationAgent \
         "$subject" \
         "en_US" \
         "$DBUS_PATH" \
-        2>&1 | tee -a "$LOG_FILE"
+        2>&1)
 
-    if [ ${PIPESTATUS[0]} -eq 0 ]; then
+    local status=$?
+    echo "$register_output" | tee -a "$LOG_FILE"
+
+    if [ $status -eq 0 ]; then
         gum style \
             --border double \
             --border-foreground 10 \
@@ -235,10 +363,20 @@ register_agent() {
             "" \
             "Agent is running and listening for D-Bus requests..." \
             "Subject: $subject" \
-            "Path: $DBUS_PATH"
+            "Path: $DBUS_PATH" \
+            "Bus: system"
     else
-        gum style --foreground 196 "❌ Error registering agent"
-        log "ERROR during agent registration"
+        gum style --foreground 196 \
+            "❌ Error registering agent" \
+            "" \
+            "Output: $register_output" \
+            "" \
+            "Troubleshooting:" \
+            "1. Check if polkit daemon is running: systemctl status polkit" \
+            "2. Try restarting polkit: sudo systemctl restart polkit" \
+            "3. Check D-Bus system bus: dbus-send --system --print-reply --dest=org.freedesktop.DBus /org/freedesktop/DBus org.freedesktop.DBus.ListNames" \
+            "4. Use sudo/doas mode instead: $0 --mode sudo"
+        log "ERROR during agent registration: $register_output"
         exit 1
     fi
 }
@@ -247,8 +385,8 @@ register_agent() {
 start_dbus_listener() {
     log "Starting D-Bus listener"
 
-    # Monitor D-Bus signals for authentication requests
-    gdbus monitor --session \
+    # Monitor D-Bus signals for authentication requests on system bus
+    gdbus monitor --system \
         --dest "$DBUS_SERVICE" 2>&1 | \
     while IFS= read -r line; do
         log "D-Bus event: $line"
@@ -319,9 +457,9 @@ unregister_agent() {
 
     log "Unregistering Polkit Agent"
 
-    local subject="unix-session:$(loginctl show-session $(loginctl | grep $(whoami) | awk '{print $1}' | head -1) -p Id --value 2>/dev/null || echo $(whoami))"
+    local subject="unix-process:$:0"
 
-    gdbus call --session \
+    gdbus call --system \
         --dest "$DBUS_SERVICE" \
         --object-path "/org/freedesktop/PolicyKit1/Authority" \
         --method org.freedesktop.PolicyKit1.Authority.UnregisterAuthenticationAgent \
@@ -367,6 +505,13 @@ show_help() {
         "  - gdbus (D-Bus communication) - for D-Bus mode" \
         "  - polkit (authentication framework)" \
         "  - sudo or doas (for respective modes)" \
+        "" \
+        "Void Linux Installation:" \
+        "  sudo xbps-install -S gum polkit glib" \
+        "" \
+        "Void Linux Runit Setup:" \
+        "  sudo ln -s /etc/sv/polkitd /var/service/" \
+        "  sudo sv start polkitd" \
         "" \
         "Examples:" \
         "  $0 --mode dbus --register    # Start as D-Bus polkit agent" \
