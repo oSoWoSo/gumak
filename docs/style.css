@@ -165,6 +165,16 @@ nav {
   border-bottom: 1px solid var(--border-color);
 }
 
+/* Crossed release button - if no release exist */
+nav a.no-release {
+    text-decoration: line-through;
+    opacity: 0.6;
+}
+
+nav a.no-release:hover {
+    opacity: 1;
+}
+
 nav ul {
   display: flex;
   flex-wrap: wrap;
