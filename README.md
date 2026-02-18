@@ -20,7 +20,7 @@ If you wanna learn terminal commands but still don't type to much.
 <details>
   <summary>gumák preview (SVG)</summary>
 
-![gumák](DOCS/gumak.svg)
+![gumák](https://raw.githubusercontent.com/oSoWoSo/gumak/refs/heads/main/docs/gumak.svg)
 </details>
 </p>
 

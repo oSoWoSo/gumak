@@ -1,0 +1,50 @@
+name: Build GitHub Pages from md files
+
+on:
+#  push:
+#    branches:
+#      - main
+#    paths:
+#      - '*.md'
+#      - 'docs/*.css'
+#      - 'docs/*.js'
+#      - .github/workflows/website.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🛎️ Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Install Pandoc
+        run: sudo apt-get update && sudo apt-get install -y pandoc
+
+      - name: Create docs directory
+        run: mkdir -p docs
+
+      - name: Make pages
+        run: |
+          ./create build
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: 'docs/'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
