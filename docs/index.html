@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>gumak</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<button class="theme-toggle" onclick="toggleTheme()">🌓</button>
+<script>
+  function toggleTheme(){
+    const html=document.documentElement;
+    const current=html.getAttribute("data-theme")||"dark";
+    const next=current==="dark"?"light":"dark";
+    html.setAttribute("data-theme",next);
+    localStorage.setItem("theme",next)
+  }
+  (function(){
+    const saved=localStorage.getItem("theme")||"dark";
+    document.documentElement.setAttribute("data-theme",saved)
+  })();
+</script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const toc = document.getElementById("TOC");
+    if (!toc) return;
+
+    // Add toc-title with toggle button
+    const titleEl = document.createElement("div");
+    titleEl.id = "toc-title";
+    titleEl.innerHTML = '<span>Contents</span><span id="toc-toggle-icon">◀</span>';
+    toc.insertBefore(titleEl, toc.firstChild);
+
+    // Wrap TOC + the rest of the content in .page-wrapper
+    const body = document.body;
+    const wrapper = document.createElement("div");
+    wrapper.className = "page-wrapper";
+
+    // Find all elements after <nav> (main nav menu)
+    const topNav = document.querySelector("body > nav");
+    const siblings = [];
+    let el = topNav ? topNav.nextElementSibling : body.firstElementChild;
+    while (el) {
+      siblings.push(el);
+      el = el.nextElementSibling;
+    }
+
+    siblings.forEach((s) => wrapper.appendChild(s));
+    body.appendChild(wrapper);
+
+    // Wrap main content (everything except TOC) in .main-content
+    const mainContent = document.createElement("div");
+    mainContent.className = "main-content";
+    Array.from(wrapper.children).forEach((child) => {
+      if (child.id !== "TOC") mainContent.appendChild(child);
+    });
+    wrapper.appendChild(mainContent);
+
+    // Collapsible toggle
+    const icon = document.getElementById("toc-toggle-icon");
+    const saved = localStorage.getItem("toc-collapsed");
+    if (saved === "true") {
+      toc.classList.add("collapsed");
+      icon.textContent = "▶";
+    }
+
+    titleEl.addEventListener("click", function () {
+      toc.classList.toggle("collapsed");
+      const isCollapsed = toc.classList.contains("collapsed");
+      icon.textContent = isCollapsed ? "▶" : "◀";
+      localStorage.setItem("toc-collapsed", isCollapsed);
+    });
+  });
+</script>
+<nav><ul>
+  <li><a href="index.html" class="active">Home</a></li>
+</ul></nav>
+<header id="title-block-header">
+<h1 class="title">gumak</h1>
+</header>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#gumák" id="toc-gumák">gumák</a></li>
+<li><a href="#collection-of-other-tuis"
+id="toc-collection-of-other-tuis">Collection of other TUIs</a>
+<ul>
+<li><a href="#for-various-purposes" id="toc-for-various-purposes">for
+various purposes</a></li>
+</ul></li>
+<li><a href="#not-finished-but-usable"
+id="toc-not-finished-but-usable">Not finished but usable</a>
+<ul>
+<li><a href="#gum" id="toc-gum">gum</a></li>
+</ul></li>
+<li><a href="#check-it" id="toc-check-it">Check it</a></li>
+<li><a href="#wink-click-for-open-preview-spoiler-arrow_down_small"
+id="toc-wink-click-for-open-preview-spoiler-arrow_down_small">😉 click
+for open PREVIEW spoiler 🔽</a></li>
+<li><a href="#wink-click-for-open-preview-spoiler-arrow_up_small"
+id="toc-wink-click-for-open-preview-spoiler-arrow_up_small">😉 click for
+open PREVIEW spoiler 🔼</a></li>
+<li></li>
+</ul>
+</nav>
+<h3 id="gumák">gumák</h3>
+<p>and</p>
+<h1 id="collection-of-other-tuis">Collection of other TUIs</h1>
+<p>which use <a href="https://github.com/charmbracelet/gum">gum</a></p>
+<h3 id="for-various-purposes">for various purposes</h3>
+<h1 id="not-finished-but-usable">Not finished but usable</h1>
+<p>Check code before using!</p>
+<p>I am learning linux for a while now. Used to create aliases for
+everything. But then forgot all commands. Get tired of typing. Used
+GUIs. But forgot commands again. Then I met</p>
+<h3 id="gum">gum</h3>
+<h4 id="and-everything-changed">And everything changed</h4>
+<p>Maybe for you to... If you wanna learn terminal commands but still
+don't type to much.</p>
+<h1 id="check-it">Check it</h1>
+<ul>
+<li>gumák - Helps you create glamourous shell scripts.</li>
+</ul>
+<h1 id="wink-click-for-open-preview-spoiler-arrow_down_small">😉 click
+for open PREVIEW spoiler 🔽</h1>
+<p>
+<details>
+  <summary>gumák preview (SVG)</summary>
+
+<p><img
+src="https://raw.githubusercontent.com/oSoWoSo/gumak/refs/heads/main/docs/gumak.svg"
+alt="gumák" /></p>
+</details>
+</p>
+
+<h1 id="wink-click-for-open-preview-spoiler-arrow_up_small">😉 click for
+open PREVIEW spoiler 🔼</h1>
+<ul>
+<li>gme - Gum Make Executable - Simple TUI for chmod a+-x</li>
+<li>gvpm - TUI for vpm aka void package manager (xbps)</li>
+<li>gvpsm - TUI for vpsm aka void source package manager (xbps-src)</li>
+<li>gcolor - My first try to create color picker in gum</li>
+<li>etc.</li>
+<li>... check yourself</li>
+</ul>
+<h1></h1>
+<p>PS: Wait for more nice TUIs...</p>
+</body>
+</html>
