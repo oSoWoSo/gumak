@@ -39,6 +39,7 @@
   --transition: all 0.3s ease; /* Transition effects */
 
   --nav-height: 52px;
+  --color-icon: var(--white);
 }
 
 /* Light theme */
@@ -54,6 +55,8 @@
   --switch-background: var(--black);
   --shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Light theme shadow */
   --shadow-lg: 0 4px 20px rgba(0, 0, 0, 0.15); /* Larger shadow effect */
+
+  --color-icon: var(--black);
 }
 
 h1, h2, h3 { font-weight: bold; }
@@ -90,6 +93,7 @@ body {
   line-height: 1.6; /* Set line height for better readability */
   overflow-x: hidden; /* Prevent horizontal overflow */
   font-size: 14px; /* Base font size */
+  font-weight: 500; /* FIX: slightly heavier than browser default (400) */
   padding: 20px; /* Padding around the body */
   max-width: 1200px; /* Maximum width for the content */
   margin: 0 auto; /* Center the body */
@@ -147,6 +151,11 @@ img {
   margin: 1em 0; /* Vertical margins for images */
 }
 
+/* SVG color filter — only applies to <img data-colorize> elements */
+img[data-colorize] {
+  filter: var(--filter-icon);
+}
+
 li {
   margin-bottom: 0.5em; /* Margin below list items */
 }
@@ -166,12 +175,13 @@ nav {
 }
 
 /* Crossed release button - if no release exist */
-nav a.no-release {
+nav ul li a.no-release,
+nav ul li a.no-release:visited {
     text-decoration: line-through;
     opacity: 0.6;
 }
 
-nav a.no-release:hover {
+nav ul li a.no-release:hover {
     opacity: 1;
 }
 
@@ -331,10 +341,18 @@ th, td {
   transition: var(--transition);
 }
 
+/* FIX: override the global ul,ol margin-left that was pushing TOC lists
+   outside the border box */
 #TOC ul {
   margin-left: 0.8em;
   margin-bottom: 0;
   list-style: none;
+  padding-left: 0; /* FIX: remove any inherited padding */
+}
+
+/* FIX: first-level ul sits directly inside #TOC padding — no extra indent */
+#TOC > ul {
+  margin-left: 0;
 }
 
 #TOC ul li {

@@ -129,17 +129,17 @@ _detect_repo() {
 		return
 	fi
 
+	# Always use the main remote repository
 	local raw
-	raw=$(git remote get-url origin 2>/dev/null)
+	raw=$(git remote get-url "$(git remote | head -n 1)" 2>/dev/null)
 
 	if [ -z "$raw" ]; then
-		_r "No git remote 'origin' found — repo buttons will be disabled"
+		_r "No git remote found — repo buttons will be disabled"
 		REPO_URL="" REPO_PLATFORM="" REPO_ZIP_URL="" REPO_RELEASE_URL=""
 		return
 	fi
 
 	# Normalize SSH → HTTPS
-	# Handles: git@host:user/repo.git  and  https://host/user/repo.git
 	local https_url
 	if [[ "$raw" =~ ^git@ ]]; then
 		https_url=$(echo "$raw" | sed 's|git@\(.*\):\(.*\)\.git|https://\1/\2|; s|git@\(.*\):\(.*\)|https://\1/\2|')
@@ -181,10 +181,10 @@ _detect_repo() {
 			REPO_PLATFORM="gitea"
 		else
 			_y "Unknown platform — only source link will be shown"
-		REPO_PLATFORM="other"
-		REPO_URL="$https_url"
-		REPO_ZIP_URL=""
-		REPO_RELEASE_URL=""
+			REPO_PLATFORM="other"
+			REPO_URL="$https_url"
+			REPO_ZIP_URL=""
+			REPO_RELEASE_URL=""
 			_check_release
 			return
 		fi
@@ -316,8 +316,8 @@ target_build() { ## Builds the website, optional: title argument
 		cp docs/CNAME src/
 	fi
 	rm -rf docs && mkdir -p docs
-	cp src/* docs/
-	rm -f docs/toggle.html docs/toc.html
+	cp -r src/* docs/
+	rm -f docs/toggle.html docs/toc.html docs/svg-color.html
 
 	if [ "$count" = 1 ]; then
 		for file in *.md; do
@@ -333,6 +333,7 @@ target_build() { ## Builds the website, optional: title argument
 				--include-before-body=src/toggle.html \
 				--include-before-body=src/toc.html \
 				--include-before-body="$nav_file" \
+				--include-after-body=src/svg-color.html \
 				--metadata title="$title" \
 				-o docs/index.html
 			rm -f "$nav_file"
@@ -364,11 +365,11 @@ target_build() { ## Builds the website, optional: title argument
 				--include-before-body=src/toggle.html \
 				--include-before-body=src/toc.html \
 				--include-before-body="$nav_file" \
+				--include-after-body=src/svg-color.html \
 				--metadata title="$meta_title" \
 				-o "$output"
 			rm -f "$nav_file"
 		done
-
 	else
 		_re "ERROR: No .md files found!"
 	fi
